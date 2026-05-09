@@ -2,116 +2,146 @@ package org.example;
 
 import java.util.Scanner;
 
+/**
+ * Diese Klasse steuert die Logik und den Ablauf eines Tic-Tac-Toe Spiels.
+ */
 public class TicTacToe {
 
-    // 🔴 Attribute aus dem UML-Diagramm
-    private Player player1;
-    private Player player2;
+    private final Player player1;
+    private final Player player2;
     private Player currentPlayer;
-    private Board board;
+    private final Board board;
 
     /**
-     * 🟢 Konstruktor: Bereitet das Spiel vor.
+     * Konstruktor: Bereitet das Spiel vor und setzt den Startspieler.
      */
     public TicTacToe() {
         player1 = new Player('X');
         player2 = new Player('O');
         board = new Board();
-        currentPlayer = player1; // X beginnt immer
+        currentPlayer = player1;
     }
 
     /**
-     * 🟢 Die Haupt-Spielschleife.
+     * Startet die Haupt-Spielschleife.
      */
     public void start() {
         Scanner scanner = new Scanner(System.in);
-        boolean gameRunning = true;
+        boolean gameOver = false;
 
-        while (gameRunning) {
-            // 1. Spielfeld und aktuellen Spieler anzeigen
-            System.out.println("Current Player: " + currentPlayer.getMarker());
-            board.print();
-
-            // 2. Eingabe vom User lesen
-            System.out.print("row (0-2): ");
-            int row = scanner.nextInt();
-            System.out.print("column (0-2): ");
-            int col = scanner.nextInt();
-
-            // 3. Zug ausführen (Validierung lassen wir für die Kürze weg)
-            if (board.isCellEmpty(row, col)) {
-                board.place(row, col, currentPlayer.getMarker());
-
-                // 4. Prüfen, ob jemand gewonnen hat
-                if (hasWinner()) {
-                    board.print();
-                    System.out.println("Player " + currentPlayer.getMarker() + " wins!");
-                    gameRunning = false;
-                }
-                // 5. Prüfen auf Unentschieden
-                else if (board.isFull()) {
-                    board.print();
-                    System.out.println("It's a draw!");
-                    gameRunning = false;
-                }
-                // 6. Spieler wechseln
-                else {
-                    switchCurrentPlayer();
-                }
-            } else {
-                System.out.println("This cell is already taken! Try again.");
-            }
+        while (!gameOver) {
+            printStatus();
+            gameOver = processTurn(scanner);
         }
         scanner.close();
     }
 
     /**
-     * 🔴 Wechselt zwischen Player 1 und Player 2.
+     * Gibt den aktuellen Status auf der Konsole aus.
+     */
+    private void printStatus() {
+        System.out.println("Current Player: " + currentPlayer.getMarker());
+        board.print();
+    }
+
+    /**
+     * Verarbeitet die Eingabe eines Spielers und führt den Zug aus.
+     * @param scanner Scanner für die Konsoleneingabe.
+     * @return true, wenn das Spiel beendet ist, sonst false.
+     */
+    private boolean processTurn(Scanner scanner) {
+        System.out.print("row (0-2): ");
+        int row = scanner.nextInt();
+        System.out.print("column (0-2): ");
+        int col = scanner.nextInt();
+
+        if (!board.isCellEmpty(row, col)) {
+            System.out.println("This cell is already taken! Try again.");
+            return false;
+        }
+
+        board.place(row, col, currentPlayer.getMarker());
+        return checkEndConditions();
+    }
+
+    /**
+     * Prüft, ob eine Gewinn- oder Unentschieden-Bedingung erfüllt ist.
+     * @return true, wenn das Spiel zu Ende ist.
+     */
+    private boolean checkEndConditions() {
+        if (hasWinner()) {
+            board.print();
+            System.out.println("Player " + currentPlayer.getMarker() + " wins!");
+            return true;
+        }
+        if (board.isFull()) {
+            board.print();
+            System.out.println("It's a draw!");
+            return true;
+        }
+        switchCurrentPlayer();
+        return false;
+    }
+
+    /**
+     * Wechselt den aktuellen Spieler.
      */
     private void switchCurrentPlayer() {
         currentPlayer = (currentPlayer == player1) ? player2 : player1;
     }
 
     /**
-     * 🔴 Prüft, ob der aktuelle Spieler das Spiel gewonnen hat.
+     * Prüft, ob der aktuelle Spieler gewonnen hat.
+     * @return true, wenn eine Reihe, Spalte oder Diagonale komplett ist.
      */
     private boolean hasWinner() {
-        char marker = currentPlayer.getMarker(); // Nach diesem Marker suchen wir ('X' oder 'O')
+        return checkRows() || checkColumns() || checkDiagonals();
+    }
 
-        // 1. Reihen (Horizontal) prüfen
-        for (int row = 0; row < 3; row++) {
-            if (board.getCell(row, 0) == marker &&
-                    board.getCell(row, 1) == marker &&
-                    board.getCell(row, 2) == marker) {
-                return true; // Gewonnen in einer Reihe
+    /**
+     * Prüft alle horizontalen Reihen auf einen Sieg.
+     * @return true bei drei gleichen Markern in einer Reihe.
+     */
+    private boolean checkRows() {
+        char marker = currentPlayer.getMarker();
+        for (int i = 0; i < 3; i++) {
+            if (board.getCell(i, 0) == marker
+                    && board.getCell(i, 1) == marker
+                    && board.getCell(i, 2) == marker) {
+                return true;
             }
         }
-
-        // 2. Spalten (Vertikal) prüfen
-        for (int col = 0; col < 3; col++) {
-            if (board.getCell(0, col) == marker &&
-                    board.getCell(1, col) == marker &&
-                    board.getCell(2, col) == marker) {
-                return true; // Gewonnen in einer Spalte
-            }
-        }
-
-        // 3. Diagonalen prüfen
-        // Diagonale von links oben nach rechts unten
-        if (board.getCell(0, 0) == marker &&
-                board.getCell(1, 1) == marker &&
-                board.getCell(2, 2) == marker) {
-            return true;
-        }
-
-        // Diagonale von rechts oben nach links unten
-        if (board.getCell(0, 2) == marker &&
-                board.getCell(1, 1) == marker &&
-                board.getCell(2, 0) == marker) {
-            return true;
-        }
-
-        // Wenn nichts zutrifft, hat noch niemand gewonnen
         return false;
+    }
+
+    /**
+     * Prüft alle vertikalen Spalten auf einen Sieg.
+     * @return true bei drei gleichen Markern in einer Spalte.
+     */
+    private boolean checkColumns() {
+        char marker = currentPlayer.getMarker();
+        for (int i = 0; i < 3; i++) {
+            if (board.getCell(0, i) == marker
+                    && board.getCell(1, i) == marker
+                    && board.getCell(2, i) == marker) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Prüft die beiden Diagonalen auf einen Sieg.
+     * @return true bei drei gleichen Markern in einer Diagonale.
+     */
+    private boolean checkDiagonals() {
+        char marker = currentPlayer.getMarker();
+        boolean mainDiag = board.getCell(0, 0) == marker
+                && board.getCell(1, 1) == marker
+                && board.getCell(2, 2) == marker;
+        boolean antiDiag = board.getCell(0, 2) == marker
+                && board.getCell(1, 1) == marker
+                && board.getCell(2, 0) == marker;
+        return mainDiag || antiDiag;
     }
 }
