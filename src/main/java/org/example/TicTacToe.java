@@ -2,9 +2,6 @@ package org.example;
 
 import java.util.Scanner;
 
-/**
- * Diese Klasse steuert die Logik und den Ablauf eines Tic-Tac-Toe Spiels.
- */
 public class TicTacToe {
 
     private final Player player1;
@@ -12,9 +9,11 @@ public class TicTacToe {
     private Player currentPlayer;
     private final Board board;
 
-    /**
-     * Konstruktor: Bereitet das Spiel vor und setzt den Startspieler.
-     */
+    public static void main(String[] args) {
+        TicTacToe game = new TicTacToe();
+        game.start();
+    }
+
     public TicTacToe() {
         player1 = new Player('X');
         player2 = new Player('O');
@@ -22,52 +21,62 @@ public class TicTacToe {
         currentPlayer = player1;
     }
 
-    /**
-     * Startet die Haupt-Spielschleife.
-     */
     public void start() {
         Scanner scanner = new Scanner(System.in);
-        boolean gameOver = false;
+        boolean keepPlaying = true;
 
-        while (!gameOver) {
-            printStatus();
-            gameOver = processTurn(scanner);
+        while (keepPlaying) {
+            board.clear();
+            currentPlayer = player1;
+            boolean gameOver = false;
+
+            while (!gameOver) {
+                printStatus();
+                gameOver = processTurn(scanner);
+            }
+
+            System.out.println();
+            System.out.println("=== GAME OVER ===");
+            System.out.print("Do you want to play again? (y/n): ");
+            String response = scanner.next().trim().toLowerCase();
+
+            if (!response.equals("y")) {
+                keepPlaying = false;
+                System.out.println("Thank you for playing! See you next time.");
+            }
         }
         scanner.close();
     }
 
-    /**
-     * Gibt den aktuellen Status auf der Konsole aus.
-     */
     private void printStatus() {
         System.out.println("Current Player: " + currentPlayer.getMarker());
         board.print();
     }
 
-    /**
-     * Verarbeitet die Eingabe eines Spielers und führt den Zug aus.
-     * @param scanner Scanner für die Konsoleneingabe.
-     * @return true, wenn das Spiel beendet ist, sonst false.
-     */
     private boolean processTurn(Scanner scanner) {
-        System.out.print("row (0-2): ");
-        int row = scanner.nextInt();
-        System.out.print("column (0-2): ");
-        int col = scanner.nextInt();
+        int row = -1;
+        int col = -1;
+        boolean validSelection = false;
 
-        if (!board.isCellEmpty(row, col)) {
-            System.out.println("This cell is already taken! Try again.");
-            return false;
+        while (!validSelection) {
+            System.out.print("row (0-2): ");
+            row = scanner.nextInt();
+            System.out.print("column (0-2): ");
+            col = scanner.nextInt();
+
+            if (row < 0 || row > 2 || col < 0 || col > 2) {
+                System.out.println("Invalid input! Coordinates must be between 0 and 2.");
+            } else if (!board.isCellEmpty(row, col)) {
+                System.out.println("This cell is already taken! Try again.");
+            } else {
+                validSelection = true;
+            }
         }
 
         board.place(row, col, currentPlayer.getMarker());
         return checkEndConditions();
     }
 
-    /**
-     * Prüft, ob eine Gewinn- oder Unentschieden-Bedingung erfüllt ist.
-     * @return true, wenn das Spiel zu Ende ist.
-     */
     private boolean checkEndConditions() {
         if (hasWinner()) {
             board.print();
@@ -83,25 +92,14 @@ public class TicTacToe {
         return false;
     }
 
-    /**
-     * Wechselt den aktuellen Spieler.
-     */
     private void switchCurrentPlayer() {
         currentPlayer = (currentPlayer == player1) ? player2 : player1;
     }
 
-    /**
-     * Prüft, ob der aktuelle Spieler gewonnen hat.
-     * @return true, wenn eine Reihe, Spalte oder Diagonale komplett ist.
-     */
-    private boolean hasWinner() {
+    public boolean hasWinner() {
         return checkRows() || checkColumns() || checkDiagonals();
     }
 
-    /**
-     * Prüft alle horizontalen Reihen auf einen Sieg.
-     * @return true bei drei gleichen Markern in einer Reihe.
-     */
     private boolean checkRows() {
         char marker = currentPlayer.getMarker();
         for (int i = 0; i < 3; i++) {
@@ -114,10 +112,6 @@ public class TicTacToe {
         return false;
     }
 
-    /**
-     * Prüft alle vertikalen Spalten auf einen Sieg.
-     * @return true bei drei gleichen Markern in einer Spalte.
-     */
     private boolean checkColumns() {
         char marker = currentPlayer.getMarker();
         for (int i = 0; i < 3; i++) {
@@ -130,10 +124,6 @@ public class TicTacToe {
         return false;
     }
 
-    /**
-     * Prüft die beiden Diagonalen auf einen Sieg.
-     * @return true bei drei gleichen Markern in einer Diagonale.
-     */
     private boolean checkDiagonals() {
         char marker = currentPlayer.getMarker();
         boolean mainDiag = board.getCell(0, 0) == marker
