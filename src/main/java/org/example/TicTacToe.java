@@ -4,10 +4,10 @@ import java.util.Scanner;
 
 public class TicTacToe {
 
-    private final Player player1;
-    private final Player player2;
-    private Player currentPlayer;
-    private final Board board;
+    final Player player1;
+    final Player player2;
+    Player currentPlayer;
+    final Board board;
 
     public static void main(String[] args) {
         TicTacToe game = new TicTacToe();
@@ -48,12 +48,12 @@ public class TicTacToe {
         scanner.close();
     }
 
-    private void printStatus() {
+    void printStatus() {
         System.out.println("Current Player: " + currentPlayer.getMarker());
         board.print();
     }
 
-    private boolean processTurn(Scanner scanner) {
+    boolean processTurn(Scanner scanner) {
         int row = -1;
         int col = -1;
         boolean validSelection = false;
@@ -77,7 +77,7 @@ public class TicTacToe {
         return checkEndConditions();
     }
 
-    private boolean checkEndConditions() {
+    boolean checkEndConditions() {
         if (hasWinner()) {
             board.print();
             System.out.println("Player " + currentPlayer.getMarker() + " wins!");
@@ -92,7 +92,7 @@ public class TicTacToe {
         return false;
     }
 
-    private void switchCurrentPlayer() {
+    void switchCurrentPlayer() {
         currentPlayer = (currentPlayer == player1) ? player2 : player1;
     }
 
@@ -100,7 +100,7 @@ public class TicTacToe {
         return checkRows() || checkColumns() || checkDiagonals();
     }
 
-    private boolean checkRows() {
+    boolean checkRows() {
         char marker = currentPlayer.getMarker();
         for (int i = 0; i < 3; i++) {
             if (board.getCell(i, 0) == marker
@@ -112,7 +112,7 @@ public class TicTacToe {
         return false;
     }
 
-    private boolean checkColumns() {
+    boolean checkColumns() {
         char marker = currentPlayer.getMarker();
         for (int i = 0; i < 3; i++) {
             if (board.getCell(0, i) == marker
@@ -124,7 +124,7 @@ public class TicTacToe {
         return false;
     }
 
-    private boolean checkDiagonals() {
+    boolean checkDiagonals() {
         char marker = currentPlayer.getMarker();
         boolean mainDiag = board.getCell(0, 0) == marker
                 && board.getCell(1, 1) == marker
