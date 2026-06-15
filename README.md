@@ -28,7 +28,7 @@ Um eine hohe Code-Qualität und lückenlose Nachvollziehbarkeit im Team zu gewä
 
 Anhand der Ticket-Historie lässt sich der vollständige Lebenszyklus transparent nachvollziehen. Nach der initialen Erstellung und automatischen Einsortierung ins Backlog wurde das Ticket durch die Entwicklungsphasen bewegt, im Zuge eines Code-Reviews geprüft und nach dem erfolgreichen Merge des Feature-Branches geschlossen.
 
-![[Pasted image 20260615113715.png]]
+![Issue Lifecycle](images/issue_lifecycle.png)
 
 ---
 
@@ -37,7 +37,7 @@ Anhand der Ticket-Historie lässt sich der vollständige Lebenszyklus transparen
 ### Das Kanban-Board
 Die Steuerung aller Anforderungen und User Stories erfolgte agil über das integrierte GitHub Project Board. Alle für den Release relevanten Issues wurden vollständig abgearbeitet, erfolgreich gereviewt und in die Spalte **Done** überführt.
 
-![[Pasted image 20260615113759.png]]
+![Kanban Board](images/kanban_board.png)
 
 ### CI/CD Pipelines (GitHub Actions)
 Die Automatisierung unseres Software-Lifecycles wird durch zwei getrennte Workflows im Ordner `.github/workflows/` gesteuert:
