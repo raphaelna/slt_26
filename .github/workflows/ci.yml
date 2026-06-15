@@ -2,9 +2,9 @@ name: Java CI (Branch Verification)
 
 on:
   push:
-    # Triggert bei jedem Push auf Feature-Branches laut eurer Namenskonvention
+    # Triggert bei jedem Push auf alle Feature-Branches
     branches:
-      - 'feature/issue-[0-9]-*'
+      - 'feature/**'
   pull_request:
     # Triggert, sobald ein PR gegen den main-Branch geöffnet oder aktualisiert wird
     branches:
